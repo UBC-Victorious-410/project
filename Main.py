@@ -1,3 +1,4 @@
+from web import visualizer
 import sys
 import os
 from git import *
@@ -19,7 +20,8 @@ def main(argv):
     elif opt == "GenerateJSON":
         print "do GenerateJSON"
     elif opt == "GenerateGraph":
-        print "do GenerateGraph"
+        visualizer.begin()
+
 
 
     else:
@@ -42,3 +44,6 @@ def usage():
 
 if __name__ == "__main__":
     main(sys.argv[1:])
+
+
+
