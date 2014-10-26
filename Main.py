@@ -46,9 +46,18 @@ def git_log():
 def PMD():
     g = Git('./Target/')
     commits = g.log("--reverse", "--pretty=%h").split("\n")
+    g = Git('./Target/')
+    # create a branch for all commits
+    # will reduce branch one we figure out the what to left out
     for c in commits:
-        print ("git checkout -b " + c)
-        print ("Execute PMD on commit: " + c)
+        g.branch(c, c)
+    print (g.branch())
+
+    for b in g.branch():
+        g.checkout(b)
+        # run PMD to ./Target
+        # place result in PMDResult
+
 
 
 
