@@ -3,6 +3,7 @@ import sys
 import os
 import shutil
 from git import *
+from subprocess import *
 
 
 def main(argv):
@@ -47,16 +48,23 @@ def PMD():
     g = Git('./Target/')
     commits = g.log("--reverse", "--pretty=%h").split("\n")
     g = Git('./Target/')
+
     # create a branch for all commits
     # will reduce branch one we figure out the what to left out
     for c in commits:
         g.branch(c, c)
     print (g.branch())
 
-    for b in g.branch():
+    # run PMD to ./Target
+    # place results in PMDResult
+    i = 1
+    for b in commits:
         g.checkout(b)
-        # run PMD to ./Target
-        # place result in PMDResult
+        os.system("tools\\pmd-bin-5.1.3\\bin\\pmd.bat -dir ./Target -format xml "
+                  "-rulesets java-basic,java-coupling,java-design,java-codesize > " +
+                  "PMDResult\\commit" + str(i) + ".xml")
+        i = i + 1
+
 
 
 
