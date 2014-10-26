@@ -37,6 +37,8 @@ def git_pull(git_dir):
 def git_log():
     g = Git('./Target/')
     gitLog = g.log("--reverse","--stat")
+    if not os.path.isdir("./PMDResult"):
+        os.mkdir("PMDResult")
     with open('./PMDResult/gitLog.txt','w') as r:
         r.write(gitLog)
     print ("gitLog.txt is placed in PMDResult")
