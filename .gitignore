@@ -51,6 +51,6 @@ coverage.xml
 docs/_build/
 
 # PyBuilder
-target/
+Target/
 PMDResult/
 
