@@ -18,7 +18,7 @@ def main(argv):
     elif opt == "PMD":
         PMD()
     elif opt == "Parse":
-        print "do parse"
+        parse()
     elif opt == "GenerateJSON":
         print "do GenerateJSON"
     elif opt == "GenerateGraph":
@@ -64,6 +64,12 @@ def PMD():
                   "-rulesets java-basic,java-coupling,java-design,java-codesize > " +
                   "PMDResult\\commit" + str(i) + ".xml")
         i = i + 1
+
+def parse():
+    os.system("java -jar tools\\PMDparser.jar")
+    print (os.path.dirname(os.path.realpath(__file__)))
+    gitlog_location = os.path.dirname(os.path.realpath(__file__)) +"/PMDResult/gitLog.txt"
+    os.system("tools\\gitlog_parser.py " + gitlog_location)
 
 
 
