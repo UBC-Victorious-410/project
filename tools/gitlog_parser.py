@@ -20,7 +20,7 @@ class commit:
         self.authorEmail = ""
         self.date = ""
         self.fileChanges = dict()
-        self.validation = 0
+        self.state = dict()
     def updateFileChanges(self, filename, linecount):
         if filename in self.fileChanges:
            self.fileChanges[filename] += linecount
@@ -44,7 +44,8 @@ def main(argv):
 
 def parse(logpath):
     LoC = []
-    parselog(logpath,LoC)
+    parselog(logpath + "/gitLog.txt",LoC)
+    printLoC(LoC,logpath)
     return LoC
 
 # parses only git logs formatted using --numstat flag (and optionally --reverse)			
@@ -107,7 +108,7 @@ def parselog (path,LoC):
             # check file suffix inside or its passed to else block below...
             if ".java" in line:
                 split = re.split(r'\t+', line)
-                filename = split[2]
+                filename = split[2].split("/")[-1][:-1]
 
                 addition = int(split[0])
                 deletion = int(split[1])
@@ -150,15 +151,15 @@ def saveMsg (hash):
             message = "";
 
 
-def printLoC(LoC):
-    for c in LoC:
-        print("===========================")
-        print ("commit: " + c.hash)
-        print ("author: "+ c.author)
-        print ("eMail: " + c.authorEmail)
-        print ("date : " + c.date)
-        print ("file changes : " + str(c.fileChanges))
-
+def printLoC(LoC,logpath):
+    with open(logpath + "/wat.txt", "w") as f:
+        for c in LoC:
+            f.write("===========================" + "\n")
+            f.write("commit: " + c.hash + "\n")
+            f.write("author: "+ c.author + "\n")
+            f.write("eMail: " + c.authorEmail + "\n")
+            f.write("date : " + c.date + "\n")
+            f.write("file changes : " + str(c.fileChanges) + "\n")
 
 
 def usage ():

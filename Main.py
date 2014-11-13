@@ -32,17 +32,10 @@ def git_pull(git_dir):
         print "/Target folder exist, please remove it to get new repository"
 
 def generateJson():
-    #git_log()
-    #PMD()
-    log_location = os.path.dirname(os.path.realpath(__file__)) +"/PMDResult"
-    fuser.parse_to_JSON(log_location)
-
-
-
-
-
-
-
+    git_log()
+    PMD()
+    log_location = os.path.dirname(os.path.realpath(__file__)) +"\PMDResult"
+    result = fuser.parse_to_JSON(log_location)
 
 
 def git_log():
@@ -74,19 +67,6 @@ def PMD():
                   "-rulesets java-basic,java-coupling,java-design,java-codesize > " +
                   "PMDResult\\commit" + str(i) + ".xml")
         i = i + 1
-
-def parse():
-    os.system("java -jar tools\\PMDparser.jar")
-    print (os.path.dirname(os.path.realpath(__file__)))
-
-    os.system("tools\\gitlog_parser.py " + gitlog_location)
-
-
-
-
-
-
-
 
 def usage():
     print "Usage: Main.py <option> "
