@@ -4,6 +4,7 @@ import os
 import shutil
 from git import *
 from subprocess import *
+from tools import fuser
 
 
 def main(argv):
@@ -13,13 +14,8 @@ def main(argv):
             git_pull(argv[1])
         except Exception, e:
             print (str(e))
-    elif opt == "gitLog":
-        git_log()
-    elif opt == "PMD":
-        PMD()
-    elif opt == "Parse":
-        parse()
     elif opt == "GenerateJSON":
+        generateJson()
         print "do GenerateJSON"
     elif opt == "GenerateGraph":
         visualizer.begin()
@@ -35,9 +31,23 @@ def git_pull(git_dir):
     else:
         print "/Target folder exist, please remove it to get new repository"
 
+def generateJson():
+    #git_log()
+    #PMD()
+    gitlog_location = os.path.dirname(os.path.realpath(__file__)) +"/PMDResult/gitLog.txt"
+    fuser.parse_gitlog(gitlog_location)
+
+
+
+
+
+
+
+
+
 def git_log():
     g = Git('./Target/')
-    gitLog = g.log("--reverse","--stat")
+    gitLog = g.log("--reverse","--numstat")
     if not os.path.isdir("./PMDResult"):
         os.mkdir("PMDResult")
     with open('./PMDResult/gitLog.txt','w') as r:
@@ -68,8 +78,10 @@ def PMD():
 def parse():
     os.system("java -jar tools\\PMDparser.jar")
     print (os.path.dirname(os.path.realpath(__file__)))
-    gitlog_location = os.path.dirname(os.path.realpath(__file__)) +"/PMDResult/gitLog.txt"
+
     os.system("tools\\gitlog_parser.py " + gitlog_location)
+
+
 
 
 
@@ -79,9 +91,9 @@ def parse():
 def usage():
     print "Usage: Main.py <option> "
     print "option: getRepo <git repo address> - perform 'git pull' with given repoURL at ./target"
-    print "        gitLog                     - generate gitLog.xml in PMDResult"
-    print "        PMD                        - analyze target/ with PMD. place xml results in PMDResults"
-    print "        Parse                      - execute parsers to parse result within PMDResults"
+    # print "        gitLog                     - generate gitLog.xml in PMDResult"
+    # print "        PMD                        - analyze target/ with PMD. place xml results in PMDResults"
+    # print "        Parse                      - execute parsers to parse result within PMDResults"
     print "        GenerateJSON               - generate JSON from the fuser "
     print "        GenerateGraph              - generate the result with D3 using JSON"
 #

@@ -43,6 +43,11 @@ def main(argv):
     else:
         usage()
 
+def parse(logpath):
+    LoC = []
+    parselog(logpath,LoC)
+    addPMDResult(LoC)
+    return LoC
 
 # parses only git logs formatted using --numstat flag (and optionally --reverse)			
 def parselog (path,LoC):
@@ -97,19 +102,20 @@ def parselog (path,LoC):
             print(date)
         #do something
 
-        elif '|' in line:
+        elif '/' in line:
             # TODO handle deleted files
             # TODO handle modified files (total lines)
 
             # check file suffix inside or its passed to else block below...
             if ".java" in line:
-                split1 = line.split("|")
-                filename = split1[0].split("/")[-1].strip()
+                split = re.split(r'\t+', line)
+                filename = split[2]
 
-                split2 = split1[1].split("+")
-                split3 = split2[0].split("-")
-                lines_modified = split3[0].strip()
-                print("Lines changed: " + lines_modified + "  " + filename)
+                addition = int(split[0])
+                deletion = int(split[1])
+                lines_modified = addition - deletion
+
+                print("Lines changed: " + str(lines_modified) + "  " + filename)
                 LoC[len(LoC)-1].updateFileChanges(filename,lines_modified)
         elif (
             ("file changed" in line or "files changed" in line)
@@ -161,6 +167,7 @@ def printLoC(LoC):
         print ("date : " + c.date)
         print ("validation : " + str(c.validation))
         print ("file changes : " + str(c.fileChanges))
+
 
 
 def usage ():
