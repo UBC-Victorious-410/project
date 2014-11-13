@@ -34,8 +34,8 @@ def git_pull(git_dir):
 def generateJson():
     #git_log()
     #PMD()
-    gitlog_location = os.path.dirname(os.path.realpath(__file__)) +"/PMDResult/gitLog.txt"
-    fuser.parse_gitlog(gitlog_location)
+    log_location = os.path.dirname(os.path.realpath(__file__)) +"/PMDResult"
+    fuser.parse_to_JSON(log_location)
 
 
 

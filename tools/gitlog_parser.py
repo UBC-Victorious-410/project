@@ -38,7 +38,6 @@ def main(argv):
     LoC = []
     if path:
         parselog(path,LoC)
-        addPMDResult(LoC)
         printLoC(LoC)
     else:
         usage()
@@ -46,7 +45,6 @@ def main(argv):
 def parse(logpath):
     LoC = []
     parselog(logpath,LoC)
-    addPMDResult(LoC)
     return LoC
 
 # parses only git logs formatted using --numstat flag (and optionally --reverse)			
@@ -151,12 +149,6 @@ def saveMsg (hash):
             messages[currenthash] = message
             message = "";
 
-def addPMDResult(LoC):
-    with open("./PMDResult/CommitResult.txt") as CR:
-        i = 0
-        for line in CR:
-            LoC[i].validation = int(line.split()[1])
-            i = i + 1
 
 def printLoC(LoC):
     for c in LoC:
@@ -165,7 +157,6 @@ def printLoC(LoC):
         print ("author: "+ c.author)
         print ("eMail: " + c.authorEmail)
         print ("date : " + c.date)
-        print ("validation : " + str(c.validation))
         print ("file changes : " + str(c.fileChanges))
 
 
