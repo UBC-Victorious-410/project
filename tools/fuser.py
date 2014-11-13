@@ -1,13 +1,9 @@
 import pickle
 import json
+from json import JSONEncoder
 import gitlog_parser
+from gitlog_parser import commit
 import pmd_parser
-
-
-def parse_to_JSON(path):
-    gitlog = parse_gitlog(path)
-    pmd = parse_PMD(path)
-    return fuse_to_JSON(gitlog,pmd)
 
 def parse_gitlog(logpath):
     return gitlog_parser.parse(logpath)
@@ -35,4 +31,19 @@ def fuse_to_JSON(gitlog, pmd):
             f.write("State: \n")
             for key2 in commit.state.keys():
                 f.write("\t" + key2 + " : " + str(commit.state[key2]) + "\n")
-    return
+    result = []
+    for commit in gitlog:
+        result.append(convert_to_json(commit))
+
+    return result
+
+def convert_to_json(commit):
+    result = {
+        'hash':commit.hash,
+        'author':commit.author,
+        'authorEmail':commit.authorEmail,
+        'date':commit.date,
+        'fileChanges':commit.fileChanges,
+        'state':commit.state
+    }
+    return result

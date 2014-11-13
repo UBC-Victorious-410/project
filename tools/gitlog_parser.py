@@ -98,6 +98,7 @@ def parselog (path,LoC):
         elif datepattern.match(line):
             result = line.split("Date:")
             date = result[1].strip()
+            LoC[len(LoC)-1].date = date
             print(date)
         #do something
 

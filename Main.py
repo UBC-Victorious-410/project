@@ -2,6 +2,7 @@ from web import visualizer
 import sys
 import os
 import shutil
+import json
 from git import *
 from subprocess import *
 from tools import fuser
@@ -32,13 +33,28 @@ def git_pull(git_dir):
         print "/Target folder exist, please remove it to get new repository"
 
 def generateJson():
-    git_log()
-    PMD()
     log_location = os.path.dirname(os.path.realpath(__file__)) +"\PMDResult"
-    result = fuser.parse_to_JSON(log_location)
+    # generate and parse gitlog
+    generate_git_log()
+    commits = fuser.parse_gitlog(log_location)
+    # filter out commits without any changes
+    commit_with_changes = []
+    hashes = []
+    for commit in commits:
+        if len(commit.fileChanges) > 0:
+            commit_with_changes.append(commit)
+            hashes.append(commit.hash)
+    # PMD these commits and parse them
+    PMD(hashes)
+    pmd = fuser.parse_PMD(log_location)
+    #fuse them to JSON
+    result = fuser.fuse_to_JSON(commit_with_changes,pmd)
+    with open('PMDResult/output.json', "w") as output:
+        output.write(json.dumps(result))
 
 
-def git_log():
+
+def generate_git_log():
     g = Git('./Target/')
     gitLog = g.log("--reverse","--numstat")
     if not os.path.isdir("./PMDResult"):
@@ -47,9 +63,7 @@ def git_log():
         r.write(gitLog)
     print ("gitLog.txt is placed in PMDResult")
 
-def PMD():
-    g = Git('./Target/')
-    commits = g.log("--reverse", "--pretty=%h").split("\n")
+def PMD(commits):
     g = Git('./Target/')
 
     # create a branch for all commits
@@ -71,9 +85,6 @@ def PMD():
 def usage():
     print "Usage: Main.py <option> "
     print "option: getRepo <git repo address> - perform 'git pull' with given repoURL at ./target"
-    # print "        gitLog                     - generate gitLog.xml in PMDResult"
-    # print "        PMD                        - analyze target/ with PMD. place xml results in PMDResults"
-    # print "        Parse                      - execute parsers to parse result within PMDResults"
     print "        GenerateJSON               - generate JSON from the fuser "
     print "        GenerateGraph              - generate the result with D3 using JSON"
 #
