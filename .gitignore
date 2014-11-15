@@ -56,3 +56,6 @@ PMDResult/
 
 # enviroment
 .idea/
+
+# jsons
+web/static/*.json

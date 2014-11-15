@@ -45,12 +45,15 @@ def generateJson():
             commit_with_changes.append(commit)
             hashes.append(commit.hash)
     # PMD these commits and parse them
-    PMD(hashes)
+    #PMD(hashes)
     pmd = fuser.parse_PMD(log_location)
     #fuse them to JSON
     result = fuser.fuse_to_JSON(commit_with_changes,pmd)
-    with open('PMDResult/output.json', "w") as output:
-        output.write(json.dumps(result))
+    count = 0
+    for r in result:
+        with open('web/static/'+str(count)+'.json' , "w") as output:
+            output.write(json.dumps(r))
+        count = count + 1
 
 
 
