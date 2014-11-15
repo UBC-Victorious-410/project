@@ -15,18 +15,26 @@ def fuse_to_JSON(gitlog, pmd):
     for commit in gitlog:
         commit.state = pmd[i]
         if i == 0:
-            commit.all = commit.fileChanges
+            commit.all = copy.deepcopy(commit.fileChanges)
         else:
             commit.all = copy.deepcopy(gitlog[i-1].all)
             for item in commit.fileChanges.keys():
                 if item in commit.all:
                     commit.all[item] = commit.all[item] + commit.fileChanges[item]
-                    if commit.all[item] == 0:
-                        del commit.all[item]
+                    # remove if the result is 0
+                    # if commit.all[item] == 0:
+                    #     del commit.all[item]
                 else:
                     commit.all[item] = commit.fileChanges[item]
-
         i = i + 1
+
+    # walk through all commit again insert class from last commit
+    # completekey = gitlog[-1].all.keys()
+    # for commit in gitlog:
+    #     for key in completekey:
+    #         if key not in commit.all:
+    #             commit.all[key] = 0
+
 
 
 
@@ -46,9 +54,6 @@ def fuse_to_JSON(gitlog, pmd):
             for key2 in commit.state.keys():
                 f.write("\t" + key2 + " : " + str(commit.state[key2]) + "\n")
 
-            f.write("all: \n")
-            for key3 in commit.all.keys():
-                f.write("\t" + key3 + " : " + str(commit.all[key3]) + "\n")
     result = []
     for commit in gitlog:
         result.append(convert_to_json(commit))
