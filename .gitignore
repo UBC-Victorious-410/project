@@ -51,6 +51,11 @@ coverage.xml
 docs/_build/
 
 # PyBuilder
-target/
+Target/
 PMDResult/
 
+# enviroment
+.idea/
+
+# jsons
+web/static/*.json
