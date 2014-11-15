@@ -4,6 +4,7 @@ from json import JSONEncoder
 import gitlog_parser
 from gitlog_parser import commit
 import pmd_parser
+import copy
 
 def parse_gitlog(logpath):
     return gitlog_parser.parse(logpath)
@@ -13,7 +14,20 @@ def fuse_to_JSON(gitlog, pmd):
     i = 0
     for commit in gitlog:
         commit.state = pmd[i]
+        if i == 0:
+            commit.all = commit.fileChanges
+        else:
+            commit.all = copy.deepcopy(gitlog[i-1].all)
+            for item in commit.fileChanges.keys():
+                if item in commit.all:
+                    commit.all[item] = commit.all[item] + commit.fileChanges[item]
+                    if commit.all[item] == 0:
+                        del commit.all[item]
+                else:
+                    commit.all[item] = commit.fileChanges[item]
+
         i = i + 1
+
 
 
     with open('./PMDResult/quack.txt', "w") as f:
@@ -31,6 +45,10 @@ def fuse_to_JSON(gitlog, pmd):
             f.write("State: \n")
             for key2 in commit.state.keys():
                 f.write("\t" + key2 + " : " + str(commit.state[key2]) + "\n")
+
+            f.write("all: \n")
+            for key3 in commit.all.keys():
+                f.write("\t" + key3 + " : " + str(commit.all[key3]) + "\n")
     result = []
     for commit in gitlog:
         result.append(convert_to_json(commit))
@@ -38,12 +56,19 @@ def fuse_to_JSON(gitlog, pmd):
     return result
 
 def convert_to_json(commit):
+    children = []
+    for key in commit.all.keys():
+        tempdict = dict()
+        tempdict["name"] = key
+        tempdict["size"] = commit.all[key]
+        children.append(tempdict)
     result = {
         'hash':commit.hash,
         'author':commit.author,
         'authorEmail':commit.authorEmail,
         'date':commit.date,
         'fileChanges':commit.fileChanges,
-        'state':commit.state
+        'state':commit.state,
+        'children':children
     }
     return result

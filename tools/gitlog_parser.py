@@ -21,6 +21,7 @@ class commit:
         self.date = ""
         self.fileChanges = dict()
         self.state = dict()
+        self.All = dict()
     def updateFileChanges(self, filename, linecount):
         if filename in self.fileChanges:
            self.fileChanges[filename] += linecount
