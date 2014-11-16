@@ -1,0 +1,25 @@
+{
+  "nodes":[
+    {"name":"Jay","type":"author", "x":200, "y": 200, "fixed":true, "dimension":50, "gravatar":"static/gravatars/jgill.tftf@gmail.com.jpg"},
+    {"name":"Austin","type":"author", "x":300, "y": 300, "fixed":true , "dimension":50, "gravatar":"static/gravatars/acm.liu11@gmail.com.jpg"},
+    {"name":"William","type":"author", "x":200, "y": 400, "fixed":true, "dimension":50, "gravatar":"static/gravatars/willy40702@gmail.com.jpg"},
+    {"name":"Josh","type":"author", "x":100, "y": 300, "fixed":true, "dimension":50, "gravatar":"static/gravatars/joshphilipandrews@gmail.com.jpg"},
+    {"name":"class1.java","type":"class", "smell_level":0, "dimension":50},
+    {"name":"class2.java","type":"class", "smell_level":1, "dimension":30},
+    {"name":"class3.java","type":"class", "smell_level":2, "dimension":25},
+    {"name":"class4.java","type":"class", "smell_level":3, "dimension":40},
+    {"name":"class5.java","type":"class", "smell_level":3, "dimension":10}
+  ],
+  "links":[
+    {"source":0,"target":4,"value":1},
+    {"source":0,"target":5,"value":1},
+    {"source":0,"target":6,"value":1},
+    {"source":0,"target":7,"value":1},
+    {"source":0,"target":8,"value":1},
+    {"source":1,"target":8,"value":1},
+    {"source":2,"target":4,"value":1},
+    {"source":3,"target":5,"value":100},
+    {"source":3,"target":4,"value":1}
+	
+  ]
+}

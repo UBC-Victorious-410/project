@@ -110,7 +110,7 @@ def parselog (path,LoC):
             LoC[len(LoC)-1].author = name
             print(email)
             LoC[len(LoC)-1].authorEmail = email
-			addToEmailList(email)
+            addToEmailList(email)
         #do something
 
         elif datepattern.match(line):
