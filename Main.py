@@ -55,8 +55,8 @@ def generateJson():
             output.write(json.dumps(r))
         count = count + 1
     # create dir to cache gravatar icons
-    if not os.path.isdir("./web/gravatars"):
-        os.mkdir("./web/gravatars")
+    if not os.path.isdir("./web/static/gravatars"):
+        os.mkdir("./web/static/gravatars")
 
 
 

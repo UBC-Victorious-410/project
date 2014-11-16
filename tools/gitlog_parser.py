@@ -12,6 +12,22 @@ i = 1
 currenthash = ""
 lasthash = ""
 
+def addToEmailList (email):
+	global email_list
+	if email not in email_list:
+		# just save emails found so we don't download gravatar icons more than once
+		email_list += email
+		saveGravatar(email)
+
+def saveGravatar (email):
+	base_url = 'http://www.gravatar.com/avatar/'
+	# trim leading and trailing whitespace and tolowercase
+	clean_email = email.strip().lower()
+	# get md5
+	gravatar_hash = hashlib.md5(clean_email.encode())
+	grav_url = base_url + gravatar_hash.hexdigest()
+	filename = email+".jpg"
+	urllib.urlretrieve(grav_url, "./web/static/gravatars/"+filename)
 
 class commit:
     def __init__(self):
@@ -94,6 +110,7 @@ def parselog (path,LoC):
             LoC[len(LoC)-1].author = name
             print(email)
             LoC[len(LoC)-1].authorEmail = email
+			addToEmailList(email)
         #do something
 
         elif datepattern.match(line):
