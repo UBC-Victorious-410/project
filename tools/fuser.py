@@ -29,11 +29,11 @@ def fuse_to_JSON(gitlog, pmd):
         i = i + 1
 
     # walk through all commit again insert class from last commit
-    # completekey = gitlog[-1].all.keys()
-    # for commit in gitlog:
-    #     for key in completekey:
-    #         if key not in commit.all:
-    #             commit.all[key] = 0
+    completekey = gitlog[-1].all.keys()
+    for commit in gitlog:
+        for key in completekey:
+            if key not in commit.all:
+                commit.all[key] = 0
 
 
 
@@ -67,13 +67,26 @@ def convert_to_json(commit):
         tempdict["name"] = key
         tempdict["size"] = commit.all[key]
         children.append(tempdict)
+    state = []
+    for key2 in commit.state.keys():
+        tempdict = dict()
+        tempdict["name"] = key2
+        tempdict["size"] = commit.state[key2]
+        state.append(tempdict)
+    fileChanges = []
+    for key3 in commit.fileChanges.keys():
+        tempdict = dict()
+        tempdict["name"] = key3
+        tempdict["size"] = commit.fileChanges[key3]
+        fileChanges.append(tempdict)
+
     result = {
         'hash':commit.hash,
         'author':commit.author,
         'authorEmail':commit.authorEmail,
         'date':commit.date,
-        'fileChanges':commit.fileChanges,
-        'state':commit.state,
+        'fileChanges':fileChanges,
+        'state':state,
         'children':children
     }
     return result
