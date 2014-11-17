@@ -1,0 +1,279 @@
+<!DOCTYPE html>
+<meta charset="utf-8">
+<style>
+
+rect {
+  fill: none;
+  pointer-events: all;
+}
+
+.node {
+  fill: #C7E9C0;
+  stroke: black;
+  opacity : 0.5;
+}
+
+.cursor {
+  fill: none;
+  stroke: brown;
+  pointer-events: none;
+}
+
+.link {
+  stroke: black;
+}
+
+</style>
+<body>
+<script src="http://d3js.org/d3.v3.min.js"></script>
+<script>
+
+var width = 2000,
+    height = 2000,
+    padding = 1.5, // separation between same-color nodes
+    clusterPadding = 6, // separation between different-color nodes
+    maxRadius = 12,
+    ra = 10,
+    currentJson = 0,
+    auth_x = width/2
+    auth_y = 0;
+
+
+var fill = d3.scale.category20();
+
+var force = d3.layout.force()
+    .size([width, height])
+    .nodes([]) // initialize with a single node
+    .linkDistance(30)
+    .charge(-400)
+    .on("tick", tick);
+
+var svg = d3.select("body").append("svg")
+    .attr("width", width)
+    .attr("height", height)
+    .on("tick", tick)
+
+svg.append("rect")
+    .attr("width", width)
+    .attr("height", height);
+
+var nodes = force.nodes(),
+    links = force.links(),
+    node = svg.selectAll(".node"),
+    link = svg.selectAll(".link");
+
+var cursor = svg.append("circle")
+    .attr("r", 30)
+    .attr("transform", "translate(-100,-100)")
+    .attr("class", "cursor");
+
+restart();
+
+function mousemove() {
+  cursor.attr("transform", "translate(" + d3.mouse(this) + ")");
+}
+
+function mousedown() {
+  var point = d3.mouse(this),
+      node = {x: point[0], y: point[1]},
+      n = nodes.push(node);
+      ra = ra + 1
+  // add links to any nearby nodes
+  nodes.forEach(function(target) {
+    var x = target.x - node.x,
+        y = target.y - node.y;
+    if (Math.sqrt(x * x + y * y) < 30) {
+      links.push({source: node, target: target});
+    }
+  });
+
+  restart();
+}
+
+function tick() {
+  link.attr("x1", function(d) { return d.source.x; })
+      .attr("y1", function(d) { return d.source.y; })
+      .attr("x2", function(d) { return d.target.x; })
+      .attr("y2", function(d) { return d.target.y; });
+
+  node.attr("cx", function(d) { return d.x; })
+      .attr("cy", function(d) { return d.y; });
+      // .each(collide(.5));
+}
+
+function restart() {
+  link = link.data(links);
+
+  link.enter().insert("line", ".node")
+      .attr("class", "link");
+
+  node = node.data(nodes);
+
+  node.enter().insert("circle", ".cursor")
+      .attr("class", "node")
+      .attr("r", 5)
+      .append("svg:title")
+      .text("haha")
+      .call(force.drag);
+
+  node.attr("r", ra)
+
+  force.start();
+}
+
+function modrestart() {
+  link = link.data(links);
+
+  link.enter().insert("line", ".node")
+      .attr("class", "link");
+
+  node = node.data(nodes);
+
+  node.enter().insert("circle")
+      .attr("class", "node")
+      .attr("r", 5)
+      .call(force.drag);
+
+  force.start();
+}
+
+
+setInterval(function(){
+  var jsonLoc = "static/"+currentJson+".json";
+  if (currentJson == 0) {
+    d3.json(jsonLoc, function(json) {
+      //enter author node
+      var Auth_node = {x:auth_x, y: auth_y, fixed:true};
+      
+      nodes.push(Auth_node);
+      node= node.data(nodes);
+      node.enter().insert("svg:circle")
+          .attr("r", 30)
+          .attr("class","node")
+          .attr("name",json.author)
+          .attr("fill", "red")
+          .append("svg:title")
+          .text(json.author);
+    // enter classes nodes 
+    for (var i = 0; i < json.children.length; i++){
+
+        var temp = {x: 0, y: 0};
+        nodes.push(temp);
+        node = node.data(nodes);
+        node.enter().insert("svg:circle")
+            .attr("class", "node")
+            .attr("name", json.children[i].name)
+            .attr("r", (function(d){
+              if (json.children[i].size == 0){
+                return 0;
+              }else
+                return (json.children[i].size/7 < 5 ? 5 : json.children[i].size/7);
+            }))
+            .append("svg:title")
+            .text(json.children[i].name)
+            .call(force.drag);
+      }
+      // enter link
+      var source = 0;
+      var target = [];
+      Allnode = svg.selectAll(".node");
+      // set source 
+      for(var i = 0; i < Allnode[0].length; i++){
+        if (d3.select(Allnode[0][i]).attr("name") == json.author){
+          source = i;
+          }
+        }
+      //set targets
+      for(var i = 0; i < json.fileChanges.length; i++){
+        for (var k = 0; k< Allnode[0].length; k++){
+          if (d3.select(Allnode[0][k]).attr("name") == json.fileChanges[i].name){
+            target.push(i);
+            }
+          }
+        }
+      // console.log(target);
+      //create link
+      link = link.data(links);
+      console.log(links);
+      for (var i = 0; i < target.length ; i++){
+        var newlink = {source:source, target:target[i]};
+        // console.log(newlink);
+        links.push(newlink);
+      }
+      console.log(links);
+      link.enter().insert("svg:line")
+          .attr("class", "link")
+          .attr("stroke-width",100);
+
+      force.start();
+    });
+  }else{
+    // d3.json(jsonLoc, function(json) {
+    //   svg.selectAll(".node")
+    //      .attr("r", function(d){
+    //         for (var i = 0; i < json.children.length; i++){
+    //           var temp = d3.select(this);
+    //           // console.log(temp.attr("name"));
+    //           if (temp.attr("name") == json.children[i].name){
+    //               // console.log(temp.attr("name") + " with size " +json.children[i].size);
+    //               var result = json.children[i].size;
+    //               if (result == 0){
+    //                 return result;
+    //               }else {
+    //                 return  (result/7 < 5 ? 5 : result/7);
+    //               }
+
+                  
+    //             }
+    //         }
+    //      })
+    //      .style("fill", function(d){
+    //         var ratio = 0
+    //         for (var i = 0; i < json.children.length; i++){
+    //           var temp = d3.select(this);
+    //           // console.log(temp.attr("name"));
+    //           if (temp.attr("name") == json.children[i].name){
+    //               // console.log(json.state);
+    //               // console.log(temp.attr("name") + " with size " +json.children[i].size);
+    //               for (var v = 0; v < json.state.length; v++){
+    //                 if (json.state[v].name == temp.attr("name")){
+    //                   ratio = (json.state[v].size/ json.children[i].size)*100;
+    //                   }
+    //                 }
+    //               }
+    //             }
+              
+    //           if (ratio == 0){
+    //             return "#C7E9C0";
+    //           }else if (ratio > 60){
+    //             return "#660000";
+    //           }else if (ratio > 50){
+    //             return "#FF000";
+    //           }else if (ratio > 40){
+    //             return "#FF7519";
+    //           }else if (ratio > 30){
+    //             return "#FFFF80";
+    //           }else if (ratio > 20){
+    //             return "#9999FF";
+    //           }else if (ratio > 10){
+    //             return "#C7E9C0";
+    //           }
+
+    //         }
+    //      )
+    //      .call(force.drag);
+
+
+
+
+
+
+    //   force.start();
+    // });
+  }
+
+  console.log(currentJson);
+  currentJson += 1;
+}, 1500)
+
+</script>
