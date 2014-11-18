@@ -54,6 +54,10 @@ def fuse_to_JSON(gitlog, pmd):
             for key2 in commit.state.keys():
                 f.write("\t" + key2 + " : " + str(commit.state[key2]) + "\n")
 
+            f.write("Children: \n")
+            for key3 in commit.all.keys():
+                f.write("\t" + key3 + " : " + str(commit.all[key3]) + "\n")
+
     result = []
     for commit in gitlog:
         result.append(convert_to_json(commit))
