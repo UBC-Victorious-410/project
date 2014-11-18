@@ -33,7 +33,10 @@ def git_pull(git_dir):
         print "/Target folder exist, please remove it to get new repository"
 
 def generateJson():
-    log_location = os.path.dirname(os.path.realpath(__file__)) +"\PMDResult"
+    if os.name is 'nt':
+        log_location = os.path.dirname(os.path.realpath(__file__)) +"\PMDResult"
+    else:
+        log_location = os.path.dirname(os.path.realpath(__file__)) +"/PMDResult"
     # generate and parse gitlog
     generate_git_log()
     commits = fuser.parse_gitlog(log_location)
@@ -45,7 +48,7 @@ def generateJson():
             commit_with_changes.append(commit)
             hashes.append(commit.hash)
     # PMD these commits and parse them
-    #PMD(hashes)
+    PMD(hashes)
     pmd = fuser.parse_PMD(log_location)
     #fuse them to JSON
     result = fuser.fuse_to_JSON(commit_with_changes,pmd)
@@ -80,9 +83,15 @@ def PMD(commits):
     i = 1
     for b in commits:
         g.checkout(b)
-        os.system("tools\\pmd-bin-5.1.3\\bin\\pmd.bat -dir ./Target -format xml "
+        if os.name is 'nt':
+            os.system("tools\\pmd-bin-5.1.3\\bin\\pmd.bat -dir ./Target -format xml "
                   "-rulesets java-basic,java-coupling,java-design,java-codesize > " +
                   "PMDResult\\commit" + str(i) + ".xml")
+
+        else:
+            os.system("tools/pmd-bin-5.1.3/bin/pmd.bat -dir ./Target -format xml "
+                  "-rulesets java-basic,java-coupling,java-design,java-codesize > " +
+                  "PMDResult/commit" + str(i) + ".xml")
         i = i + 1
 
 def usage():
