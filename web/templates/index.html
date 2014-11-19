@@ -237,6 +237,7 @@ function update(){
         // add new authNode
         var Auth_node = {x: AuthPos[AuthCount].x, y: AuthPos[AuthCount].y,
                  name:json.author,
+				 gravatar: "/static/gravatars/" + json.authorEmail + ".jpg",
                  fixed:true,
                  radius:50};
         AuthCount ++;
@@ -263,16 +264,18 @@ function update(){
                   .attr("stroke-width", function(d){return scaleLink(d.width);});
         author = svg.selectAll(".author")
                     .data(authors)
-                    .enter().insert("circle")
-                    .attr("cx",  function(d){return d.x})
-                    .attr("cy",  function(d){return d.y})
-                    .attr("fixed",function(d){return d.fixed})
-                    .attr("class", "author")
-                    .attr("name", function(d){return d.name;})
-                    .attr("r", function(d){ return d.radius;})
-                    .append("svg:title")
-                    .text(function(d){return d.name;})
-                    .call(force.drag);
+              .enter().insert("image")
+			  .attr("xlink:href", function(d) {return d.gravatar;})
+              .attr("x",  function(d){return d.x - d.radius*0.5})
+              .attr("y",  function(d){return d.y - d.radius*0.5})
+              .attr("fixed",function(d){return d.fixed})
+              .attr("class", "author")
+              .attr("name", function(d){return d.name;})
+              .attr("width", function(d){ return d.radius;})
+              .attr("height", function(d){ return d.radius;})
+              .append("svg:title")
+              .text(function(d){return d.name;})
+              .call(force.drag);
       }else{
         // update auth link
         var Auth_node = authors[auth]
