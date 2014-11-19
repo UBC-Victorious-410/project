@@ -33,6 +33,8 @@ def git_pull(git_dir):
         print "/Target folder exist, please remove it to get new repository"
 
 def generateJson():
+    if not os.path.isdir("./web/static/gravatars"):
+        os.mkdir("./web/static/gravatars")
     if os.name is 'nt':
         log_location = os.path.dirname(os.path.realpath(__file__)) +"\PMDResult"
     else:

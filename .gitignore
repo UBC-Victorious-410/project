@@ -59,3 +59,8 @@ PMDResult/
 
 # jsons
 web/static/*.json
+
+# gravatars
+web/static/gravatars/*.jpg
+
+
