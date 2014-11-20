@@ -60,7 +60,7 @@ def parselog (path,LoC):
     global lasthash
     global inMessage
 
-    raw_log = open(path, 'r').readlines()
+    raw_log = open(path, 'r')
 
     hashpattern = re.compile("commit\s[0-9A-Fa-f]{40}")
     datepattern = re.compile("Date:\s{3}\w{3}\s\w{3}\s\d{1,2}\s\d{2}:\d{2}:\d{2}\s\d{4}\s-\d{4}")
@@ -105,6 +105,9 @@ def parselog (path,LoC):
             date = result[1].strip()
             LoC[len(LoC)-1].date = date
             print(date)
+            next(raw_log)
+            next(raw_log)
+            next(raw_log)
         #do something
 
         elif '/' in line:
@@ -114,14 +117,15 @@ def parselog (path,LoC):
             # check file suffix inside or its passed to else block below...
             if ".java" in line:
                 split = re.split(r'\t+', line)
-                filename = split[2].split("/")[-1][:-1]
+                if (len(split)==3):
+                    filename = split[2].split("/")[-1][:-1]
 
-                addition = int(split[0])
-                deletion = int(split[1])
-                lines_modified = addition - deletion
+                    addition = int(split[0])
+                    deletion = int(split[1])
+                    lines_modified = addition - deletion
 
-                print("Lines changed: " + str(lines_modified) + "  " + filename)
-                LoC[len(LoC)-1].updateFileChanges(filename,lines_modified)
+                    print("Lines changed: " + str(lines_modified) + "  " + filename)
+                    LoC[len(LoC)-1].updateFileChanges(filename,lines_modified)
         elif (
             ("file changed" in line or "files changed" in line)
         and
